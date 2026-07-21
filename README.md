@@ -1,99 +1,65 @@
-# Red-Black Tree — Step-by-Step Visualization with JavaFX
+# Red-Black Tree Visualization with JavaFX
 
-A didactic JavaFX application that presents insertion into a red-black tree not only as a final result, but as a sequence of individual repair steps.
+A JavaFX application that visualizes insertion into a red-black tree step by step.
 
-The visualization shows when a new node is inserted, when a red-red violation occurs, which nodes are recolored, and how rotations restore the properties of the red-black tree.
-
-> This project was created as a technical prototype in a Design Thinking project. The learning problem is that many students find it difficult to understand the intermediate states of red-black tree balancing and often do not know which insertion sequence will trigger a particular repair case.
+Instead of showing only the final tree, the application displays intermediate states, recoloring operations, rotations, and temporary rule violations during balancing.
 
 ## Features
 
-- step-by-step visualization of every insertion;
-- visible intermediate states during repair;
-- visualization of node recoloring;
-- visualization of left and right rotations when they occur in the selected insertion sequence;
-- display of black `NIL` leaves;
-- display of the black-node count for every root-to-`NIL` path;
-- continuous validation of the main red-black tree properties;
-- highlighting of the nodes involved in the current step;
-- manual navigation with **Zurück** and **Weiter**;
-- automatic playback with **Automatisch** and **Pause**;
-- return to the initial state with **Neu starten**.
+* step-by-step visualization of node insertion;
+* intermediate states during tree balancing;
+* node recoloring and rotations;
+* display of black `NIL` leaves;
+* black-node count for every root-to-`NIL` path;
+* validation of the main red-black tree properties;
+* highlighting of nodes involved in the current step;
+* manual and automatic playback.
 
 The application interface is currently in German.
 
-## Displayed Rules
+## Controls
 
-For every stored state, the application checks the following properties:
+| Button          | Function                 |
+| --------------- | ------------------------ |
+| **Zurück**      | previous state           |
+| **Weiter**      | next state               |
+| **Automatisch** | start automatic playback |
+| **Pause**       | pause automatic playback |
+| **Neu starten** | return to the empty tree |
 
-1. **The root is black.**
-2. **A red node does not have a red parent or red child.**
-3. **Every path from the root to a `NIL` leaf contains the same number of black nodes.**
+A gold outline marks the nodes involved in the current operation.
 
-Intermediate states during a repair operation may temporarily violate one or more of these rules. The application identifies such a state with the message:
+## Default Sequence
 
-```text
-Zwischenzustand während der Reparatur
-```
-
-This means:
-
-```text
-Intermediate state during repair
-```
-
-After the repair is complete, the tree is displayed as a valid red-black tree again.
-
-## Meaning of Black Height
-
-In this visualization, `BH` represents the number of black nodes on a complete path from the root to a `NIL` leaf. Both a black root and the black `NIL` leaf are included in the count.
-
-For example:
-
-```text
-BH=4
-```
-
-means that the corresponding root-to-`NIL` path contains four black nodes.
-
-A red-black tree does not require all paths to have the same geometric length. Only the number of black nodes on the paths must be equal.
-
-## Default Scenario
-
-The application currently uses the strictly increasing insertion sequence:
+The current version uses the following insertion sequence:
 
 ```text
 3, 5, 8, 10, 12, 15, 17, 20, 22, 25, 27, 30, 32, 35, 37
 ```
 
-This sequence reliably produces:
+It demonstrates red-red violations, recoloring, left rotations, and intermediate balancing states.
 
-- red-red violations;
-- recoloring operations;
-- left rotations;
-- temporary changes in black height during repair.
+## Validation
 
-Because the sequence is strictly increasing, it does not produce right rotations. Additional guaranteed scenarios for demonstrating all major repair cases are:
+For every stored state, the application checks:
 
-```java
-int[] LEFT_ROTATION  = {10, 20, 30};
-int[] RIGHT_ROTATION = {30, 20, 10};
-int[] LEFT_RIGHT     = {30, 10, 20};
-int[] RIGHT_LEFT     = {10, 30, 20};
-int[] RECOLORING     = {10, 5, 15, 1};
+1. the root is black;
+2. no red node has a red parent or red child;
+3. every root-to-`NIL` path contains the same number of black nodes.
+
+Intermediate states may temporarily violate these rules and are marked with:
+
+```text
+Zwischenzustand während der Reparatur
 ```
 
-## Controls
+`BH` shows the number of black nodes on a complete path from the root to a `NIL` leaf. The black root and the black `NIL` leaf are included in this count.
 
-| Button | Function |
-|---|---|
-| **Zurück** | shows the previous stored state |
-| **Weiter** | shows the next stored state |
-| **Automatisch** | starts automatic playback |
-| **Pause** | pauses automatic playback |
-| **Neu starten** | returns to the empty tree |
+## Download
 
-A gold outline marks the nodes involved in the current repair step.
+A ready-to-use Windows version is available on the GitHub **Releases** page.
+
+The Windows package includes the required Java runtime and can be started without installing a development environment.
 
 ## Project Structure
 
@@ -105,55 +71,33 @@ rbt2/
 │   ├── RBTreeNode.java
 │   ├── RBTreeVisualizer.java
 │   └── TreeStep.java
-├── bin/                 # generated during compilation
 ├── README.md
+├── LICENSE
 └── .gitignore
 ```
 
-### Class Responsibilities
+| File                    | Responsibility                                                 |
+| ----------------------- | -------------------------------------------------------------- |
+| `Main.java`             | JavaFX interface, navigation, and automatic playback           |
+| `RBTree.java`           | insertion, recoloring, rotations, and step generation          |
+| `RBTreeNode.java`       | red-black tree node                                            |
+| `TreeStep.java`         | stored tree state and rule validation                          |
+| `RBTreeVisualizer.java` | rendering of nodes, edges, `NIL` leaves, and black-node counts |
 
-| File | Responsibility |
-|---|---|
-| `Main.java` | JavaFX user interface, navigation, and automatic playback |
-| `RBTree.java` | insertion algorithm, recoloring, rotations, and step events |
-| `RBTreeNode.java` | data structure representing a tree node |
-| `TreeStep.java` | immutable snapshot of a tree state and validation of displayed rules |
-| `RBTreeVisualizer.java` | graphical rendering of nodes, edges, `NIL` leaves, and black heights |
+## Running from Source
 
-## Requirements
+### Requirements
 
-- Windows, Linux, or macOS;
-- JDK 17;
-- JavaFX SDK 17;
-- optionally, Visual Studio Code with the **Extension Pack for Java**.
+* JDK 17;
+* JavaFX SDK 17.
 
-The project does not use Maven or Gradle. JavaFX is included as a local SDK.
+### Compile
 
-## Compile and Run Without Maven
-
-### 1. Install the JavaFX SDK
-
-Download JavaFX SDK 17 and extract it, for example to:
-
-```text
-C:\java\javafx-sdk-17.0.18
-```
-
-The `lib` directory should contain files such as:
-
-```text
-javafx.base.jar
-javafx.controls.jar
-javafx.graphics.jar
-```
-
-### 2. Compile the Project
-
-Open PowerShell in the project directory and run:
+Open PowerShell in the project directory:
 
 ```powershell
-$JAVA_HOME = "C:\Program Files\Eclipse Adoptium\jdk-17.0.17.10-hotspot"
-$JAVAFX_HOME = "C:\java\javafx-sdk-17.0.18"
+$JAVA_HOME = "C:\path\to\jdk-17"
+$JAVAFX_HOME = "C:\path\to\javafx-sdk-17"
 
 New-Item -ItemType Directory -Force -Path ".\bin" | Out-Null
 $sources = Get-ChildItem ".\src\*.java" | ForEach-Object { $_.FullName }
@@ -166,9 +110,7 @@ $sources = Get-ChildItem ".\src\*.java" | ForEach-Object { $_.FullName }
   $sources
 ```
 
-Adjust the paths to match your local JDK and JavaFX installations.
-
-### 3. Run the Application
+### Run
 
 ```powershell
 & "$JAVA_HOME\bin\java.exe" `
@@ -178,53 +120,27 @@ Adjust the paths to match your local JDK and JavaFX installations.
   Main
 ```
 
-## Visual Studio Code
-
-For a project without a build tool, JavaFX can be referenced in `.vscode/settings.json`:
-
-```json
-{
-    "java.project.sourcePaths": [
-        "src"
-    ],
-    "java.project.outputPath": "bin",
-    "java.project.referencedLibraries": [
-        "C:/java/javafx-sdk-17.0.18/lib/*.jar"
-    ]
-}
-```
-
-These paths are local and must be adjusted on every computer. Personal `.vscode` files containing absolute paths should therefore not be committed unchanged to a public GitHub repository.
-
 ## Current Limitations
 
-- Only insertion is implemented; deletion and search are not part of the user interface.
-- Because the default sequence is increasing, the standard scenario demonstrates only left rotations.
-- Rotations are shown as consecutive snapshots rather than smooth node movement.
-- The demonstration is intended for unique keys; duplicate keys are not treated as a separate learning case.
-- Automated tests are not yet included.
+* only insertion is implemented;
+* the default sequence demonstrates only left rotations;
+* rotations are displayed as consecutive states rather than animations;
+* duplicate keys are not handled as a separate case;
+* automated tests are not yet included.
 
-## Planned Improvements
+## Background
 
-- selectable guaranteed scenarios for recoloring, left rotation, right rotation, and double rotations;
-- visual identification of the **new node**, **parent**, **grandparent**, and **uncle**;
-- arrows and animations showing rotation direction;
-- grouping of steps by insertion operation and repair phase;
-- automated tests for red-black tree invariants;
-- customizable insertion sequences;
-- responsive visualization when the window is resized.
+The application was developed as a technical prototype for a Design Thinking project focused on visualizing intermediate states during red-black tree balancing.
 
-## Design Thinking Context
+An earlier version generated static diagrams using Python and Graphviz:
 
-The prototype addresses a specific learning problem: balancing a red-black tree is difficult to understand when it is explained only through text or static diagrams. The application makes internal state changes visible and reduces the need for learners to guess suitable input values themselves.
+* https://github.com/konstrot/red-black-tree-visualization
 
-An earlier project iteration generated static visualizations using Python and Graphviz. The JavaFX version extends that approach with interactive navigation, intermediate states, and visible validation of black height.
+## License
 
-Related Python project:
-
-- https://github.com/konstrot/red-black-tree-visualization
+This project is licensed under the terms described in the [LICENSE](LICENSE) file.
 
 ## Author
 
-Konstantin Rotaermel  
+Konstantin Rotaermel
 GitHub: [@konstrot](https://github.com/konstrot)
