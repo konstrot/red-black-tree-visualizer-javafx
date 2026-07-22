@@ -6,15 +6,18 @@ import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -47,7 +50,17 @@ public class Main extends Application {
     public void start(Stage stage) {
         createSteps();
 
-        canvas = new Canvas(1500, 700);
+        canvas = new Canvas();
+        StackPane canvasPane = new StackPane(canvas);
+        canvasPane.setMinSize(0, 0);
+
+        canvas.widthProperty().bind(canvasPane.widthProperty());
+        canvas.heightProperty().bind(canvasPane.heightProperty());
+
+        canvas.widthProperty().addListener(
+                (observable, oldValue, newValue) -> redrawCurrentStep());
+        canvas.heightProperty().addListener(
+                (observable, oldValue, newValue) -> redrawCurrentStep());
 
         Label titleLabel = new Label("Einfügen in einen Rot-Schwarz-Baum");
         titleLabel.setFont(Font.font("Arial", FontWeight.BOLD, 24));
@@ -56,6 +69,7 @@ public class Main extends Application {
                 "Aufsteigende Einfügefolge: 3, 5, 8, 10, 12, 15, 17, 20, "
                         + "22, 25, 27, 30, 32, 35, 37");
         sequenceLabel.setFont(Font.font("Arial", 14));
+        sequenceLabel.setWrapText(true);
 
         stepLabel = new Label();
         stepLabel.setFont(Font.font("Arial", FontWeight.BOLD, 15));
@@ -110,23 +124,33 @@ public class Main extends Application {
                 automaticButton,
                 restartButton);
         controls.setAlignment(Pos.CENTER);
-        controls.setPadding(new Insets(2, 12, 26, 12));
+        controls.setPadding(new Insets(12));
 
         BorderPane rootPane = new BorderPane();
+        rootPane.setMinSize(0, 0);
         rootPane.setTop(informationBox);
-        rootPane.setCenter(canvas);
+        rootPane.setCenter(canvasPane);
         rootPane.setBottom(controls);
 
         automaticPlayback = new Timeline(
                 new KeyFrame(Duration.seconds(1.35), event -> showNextStep()));
         automaticPlayback.setCycleCount(Timeline.INDEFINITE);
 
-        Scene scene = new Scene(rootPane, 1520, 900);
+        Rectangle2D visualBounds = Screen.getPrimary().getVisualBounds();
+        double sceneWidth = Math.min(
+                1200,
+                Math.max(760, visualBounds.getWidth() - 80));
+        double sceneHeight = Math.min(
+                700,
+                Math.max(480, visualBounds.getHeight() - 80));
+
+        Scene scene = new Scene(rootPane, sceneWidth, sceneHeight);
         stage.setTitle("Rot-Schwarz-Baum – Schrittweise Visualisierung");
         stage.setScene(scene);
-        stage.setMinWidth(1200);
-        stage.setMinHeight(780);
+        stage.setMinWidth(Math.min(900, sceneWidth));
+        stage.setMinHeight(Math.min(600, sceneHeight));
         stage.show();
+        stage.centerOnScreen();
 
         showStep(0);
     }
@@ -192,6 +216,14 @@ public class Main extends Application {
 
         if (currentStepIndex == steps.size() - 1) {
             stopAutomaticPlayback();
+        }
+    }
+
+    private void redrawCurrentStep() {
+        if (!steps.isEmpty()
+                && canvas.getWidth() > 0
+                && canvas.getHeight() > 0) {
+            visualizer.draw(canvas, steps.get(currentStepIndex));
         }
     }
 

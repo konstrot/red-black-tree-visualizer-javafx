@@ -59,13 +59,15 @@ public class RBTreeVisualizer {
         int nilLeafCount = countNilLeaves(visualRoot);
         int maxDepth = findMaxDepth(visualRoot);
 
-        double availableWidth = canvas.getWidth() - 2 * SIDE_MARGIN;
+        double availableWidth = Math.max(1, canvas.getWidth() - 2 * SIDE_MARGIN);
         leafSpacing = nilLeafCount > 1
                 ? availableWidth / (nilLeafCount - 1)
                 : availableWidth;
         nextLeafX = SIDE_MARGIN;
 
-        double availableHeight = canvas.getHeight() - TOP_MARGIN - BOTTOM_MARGIN;
+        double availableHeight = Math.max(
+                1,
+                canvas.getHeight() - TOP_MARGIN - BOTTOM_MARGIN);
         verticalGap = Math.min(92, availableHeight / Math.max(1, maxDepth));
 
         assignCoordinates(visualRoot);
@@ -215,7 +217,7 @@ public class RBTreeVisualizer {
     }
 
     private void drawLegend(GraphicsContext gc, double canvasWidth) {
-        double x = canvasWidth - 430;
+        double x = Math.max(15, canvasWidth - 430);
         double y = 24;
 
         gc.setFill(Color.CRIMSON);
